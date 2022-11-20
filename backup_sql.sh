@@ -8,13 +8,9 @@ Help()
   # Display Help.
   echo "Creates zip archive backup from specified docker sql container using mysqldump."
   echo
-  echo "Syntax: backup_files.sh [-c] [-u] [-p] [-d] [-b]"
+  echo "Syntax: backup_sql.sh [-d]"
   echo "options:"
-  echo "-c    Specifies docker sql container to be dumped."
-  echo "-u    Specifies user with access to the database."
-  echo "-p    Specifies password for the database."
-  echo "-d    Specifies database name."
-  echo "-b    Specifies backupDirectory for the backup being saved."
+  echo "-d    Specifies directory of the project."
   echo "-h    Prints this help message."
   echo
 }
@@ -25,8 +21,20 @@ Help()
 Execute()
 {
   # Execute the script.
-  docker exec $containerName /usr/bin/mysqldump -u $username --password=$password $database > "${backupDirectory}/backup.sql"
-  zip -r "${backupDirectory}/backup.zip" "${backupDirectory}/backup.sql"
+  source "${DIRECTORY}/.env"
+  BACKUP_DIRECTORY="./backups/${PROJECT_NAME}"
+  mkdir -p $BACKUP_DIRECTORY
+  BACKUP_DUMP="${BACKUP_DIRECTORY}/sql_backup_${DATE}.sql"
+  BACKUP_ZIP="${BACKUP_DIRECTORY}/sql_backup_${DATE}.zip"
+  docker exec "${PROJECT_NAME}_db" /usr/bin/mysqldump -u $DB_USERNAME --password=$DB_PASSWORD $DB_DATABASE > $BACKUP_DUMP
+  zip -r $BACKUP_ZIP $BACKUP_DUMP
+  rm $BACKUP_DUMP
+  if [ "$?" -eq 0 ]
+  then
+    curl --request POST $SLACK_HOOK -d 'payload={"text": "<!channel> Result of sql backup on '$PROJECT_NAME' is SUCCESS on '$DATE'"}'
+  else
+    curl --request POST $SLACK_HOOK -d 'payload={"text": "<!channel> Result of sql backup on '$PROJECT_NAME' is FAIL on '$DATE'"}'
+  fi
   echo "Done.";
 }
 
@@ -34,16 +42,13 @@ Execute()
 # MAIN
 ############################################################################################
 
-while getopts c:u:p:d:b:h flag
+while getopts d:h flag
 do
   case "${flag}" in
-    c) containerName=${OPTARG};;
-    u) username=${OPTARG};;
-    p) password=${OPTARG};;
-    d) database=${OPTARG};;
-    b) backupDirectory=${OPTARG};;
+    d) DIRECTORY=${OPTARG};;
     h) Help
        exit;;
   esac
 done
+DATE=`date +%Y_%m_%d`
 Execute
