@@ -8,10 +8,10 @@ Help()
   # Display Help.
   echo "Creates zip archive backup from specified directory to specified backup directory."
   echo
-  echo "Syntax: backup_files.sh [-d] [-bd]"
+  echo "Syntax: backup_files.sh [-d] [-b]"
   echo "options:"
   echo "-d    Specifies directory to be backuped."
-  echo "-bd   Specifies backupDirectory for the backup being saved."
+  echo "-b    Specifies backupDirectory for the backup being saved."
   echo "-h    Prints this help message."
   echo
 }
