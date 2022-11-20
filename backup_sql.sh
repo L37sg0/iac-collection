@@ -6,11 +6,14 @@
 Help()
 {
   # Display Help.
-  echo "Creates zip archive backup from specified directory to specified backup directory."
+  echo "Creates zip archive backup from specified docker sql container using mysqldump."
   echo
-  echo "Syntax: backup_files.sh [-d] [-b]"
+  echo "Syntax: backup_files.sh [-c] [-u] [-p] [-d] [-b]"
   echo "options:"
-  echo "-d    Specifies directory to be backuped."
+  echo "-c    Specifies docker sql container to be dumped."
+  echo "-u    Specifies user with access to the database."
+  echo "-p    Specifies password for the database."
+  echo "-d    Specifies database name."
   echo "-b    Specifies backupDirectory for the backup being saved."
   echo "-h    Prints this help message."
   echo
@@ -22,7 +25,8 @@ Help()
 Execute()
 {
   # Execute the script.
-  zip -r "${backupDirectory}/backup.zip" $directory
+  docker exec $containerName /usr/bin/mysqldump -u $username --password=$password $database > "${backupDirectory}/backup.sql"
+  zip -r "${backupDirectory}/backup.zip" "${backupDirectory}/backup.sql"
   echo "Done.";
 }
 
@@ -30,10 +34,13 @@ Execute()
 # MAIN
 ############################################################################################
 
-while getopts d:b:h flag
+while getopts c:u:p:d:b:h flag
 do
   case "${flag}" in
-    d) directory=${OPTARG};;
+    c) containerName=${OPTARG};;
+    u) username=${OPTARG};;
+    p) password=${OPTARG};;
+    d) database=${OPTARG};;
     b) backupDirectory=${OPTARG};;
     h) Help
        exit;;
