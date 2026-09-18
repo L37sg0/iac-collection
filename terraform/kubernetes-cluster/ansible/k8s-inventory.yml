@@ -1,0 +1,32 @@
+---
+all:
+  children:
+    k8s_master:
+      hosts:
+        master_node:
+          ansible_host: 192.168.0.105
+    
+    k8s_nodes:
+      hosts:
+        worker1_node:
+          ansible_host: 192.168.0.106
+        worker2_node:
+          ansible_host: 192.168.0.107
+        worker3_node:
+          ansible_host: 192.168.0.108
+    
+    k8s_cluster:
+      children:
+        k8s_master: {}
+        k8s_nodes: {}
+      vars:
+        cluster_network: 192.168.0.0/24
+        pod_network_cidr: 10.244.0.0/16
+        kubernetes_version: 1.30.0
+  
+  vars:
+    ansible_user: dev
+#    ansible_password: P@55w0rd
+#    ansible_become: true
+#    ansible_become_password: P@55w0rd
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
