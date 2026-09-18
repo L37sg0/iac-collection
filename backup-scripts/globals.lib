@@ -1,0 +1,2 @@
+SLACK_HOOK='your-slack-hook-url-here'
+DATE=`date +%Y_%m_%d`
