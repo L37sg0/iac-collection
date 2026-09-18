@@ -1,0 +1,19 @@
+############################################################################################
+# NOTIFICATIONS LIB
+############################################################################################
+# HOOKS
+############################################################################################
+SLACK_HOOK='your-slack-hook-url'
+
+############################################################################################
+# SLACK NOTIFICATION
+############################################################################################
+NotifySlack()
+{
+  if [ "$?" -eq 0 ]
+  then
+    curl --request POST $SLACK_HOOK -d 'payload={"text": "<!channel> Result of '$SCRIPT_TYPE' on '$PROJECT_NAME' is SUCCESS on '$DATE'"}'
+  else
+    curl --request POST $SLACK_HOOK -d 'payload={"text": "<!channel> Result of '$CRIPT_TYPE' on '$PROJECT_NAME' is FAIL on '$DATE'"}'
+  fi
+}
