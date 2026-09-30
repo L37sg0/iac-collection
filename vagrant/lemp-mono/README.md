@@ -62,21 +62,21 @@ vagrant/lemp-mono/
 
 ## Usage & Quick Start
 
-### 1. Start the Environment
+### Start the Environment
 
 ```bash
 vagrant up
 
 ```
 
-### 2. Access the Application
+### Access the Application
 
 Open your browser and navigate to:
 
 * **Validation Dashboard:** `http://localhost:8080`
 * **PHP Info:** `http://localhost:8080/phpinfo.php`
 
-### 3. Connect via SSH
+### Connect via SSH
 
 ```bash
 vagrant ssh
